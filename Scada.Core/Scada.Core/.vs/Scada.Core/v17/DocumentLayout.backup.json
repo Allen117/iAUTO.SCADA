@@ -1,0 +1,122 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.core\\data\\repository\\coordinatorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|solutionrelative:scada.core\\data\\repository\\coordinatorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5F9C37C1-2360-45C5-BE9E-32B62168600B}|Scada.ConsoleApp\\Scada.ConsoleApp.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.consoleapp\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5F9C37C1-2360-45C5-BE9E-32B62168600B}|Scada.ConsoleApp\\Scada.ConsoleApp.csproj|solutionrelative:scada.consoleapp\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.core\\data\\dbreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|solutionrelative:scada.core\\data\\dbreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.core\\services\\coordinatordefloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|solutionrelative:scada.core\\services\\coordinatordefloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.core\\domain\\tgcoordinator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|solutionrelative:scada.core\\domain\\tgcoordinator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|c:\\users\\a50388.itri\\desktop\\scada.core\\scada.core\\scada.core\\config\\settingsreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96DD787E-D447-461B-82DA-F032637320FA}|Scada.Core\\Scada.Core.csproj|solutionrelative:scada.core\\config\\settingsreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CoordinatorRepository.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Data\\Repository\\CoordinatorRepository.cs",
+              "RelativeDocumentMoniker": "Scada.Core\\Data\\Repository\\CoordinatorRepository.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Data\\Repository\\CoordinatorRepository.cs",
+              "RelativeToolTip": "Scada.Core\\Data\\Repository\\CoordinatorRepository.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBMAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T03:33:18.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "tgCoordinator.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Domain\\tgCoordinator.cs",
+              "RelativeDocumentMoniker": "Scada.Core\\Domain\\tgCoordinator.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Domain\\tgCoordinator.cs",
+              "RelativeToolTip": "Scada.Core\\Domain\\tgCoordinator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T03:29:27.362Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DbReader.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Data\\DbReader.cs",
+              "RelativeDocumentMoniker": "Scada.Core\\Data\\DbReader.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Data\\DbReader.cs",
+              "RelativeToolTip": "Scada.Core\\Data\\DbReader.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T03:27:50.234Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CoordinatorDefLoader.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Services\\CoordinatorDefLoader.cs",
+              "RelativeDocumentMoniker": "Scada.Core\\Services\\CoordinatorDefLoader.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Services\\CoordinatorDefLoader.cs",
+              "RelativeToolTip": "Scada.Core\\Services\\CoordinatorDefLoader.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACoAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T03:26:06.021Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.ConsoleApp\\Class1.cs",
+              "RelativeDocumentMoniker": "Scada.ConsoleApp\\Class1.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.ConsoleApp\\Class1.cs",
+              "RelativeToolTip": "Scada.ConsoleApp\\Class1.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwBsAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T03:25:22.041Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SettingsReader.cs",
+              "DocumentMoniker": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Config\\SettingsReader.cs",
+              "RelativeDocumentMoniker": "Scada.Core\\Config\\SettingsReader.cs",
+              "ToolTip": "C:\\Users\\A50388.ITRI\\Desktop\\Scada.Core\\Scada.Core\\Scada.Core\\Config\\SettingsReader.cs",
+              "RelativeToolTip": "Scada.Core\\Config\\SettingsReader.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T02:06:34.049Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
