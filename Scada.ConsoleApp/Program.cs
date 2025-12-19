@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Reflection.PortableExecutable;
 using System.Threading;
+using Scada.Core.Binding;
 using Scada.Core.Config;
 using Scada.Core.Data;
 using Scada.Core.Data.Repositories;
+using Scada.Core.Data.Repository;
+using Scada.Core.DeviceClass;
 using Scada.Core.Domain;
 using Scada.Core.Logging;
 using Scada.Core.Modbus;
+using Scada.Core.Modbus.Decode;
 using Scada.Core.Runtime;
 using Scada.Core.Services;
 
@@ -35,6 +39,8 @@ foreach (var mobjCoordinator in coRepo.GetCoordinator())
     );
 }
 
+ScadaRuntime.gcolEndDeviceNode.Clear();
+
 var defLoader = new CoordinatorDefLoader();
 string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -58,6 +64,13 @@ foreach (var co in ScadaRuntime.gcolCoordinator.Values)
     Console.WriteLine(parsed.Groups.Count);
     // 4. 測試 ModbusReadPlanner
     var allCommands = new List<ModbusReadCommand>();
+
+    var repo = new EndDeviceRepository();
+    tgEndDevice[] devices = repo.CreateFromCoordinator(co, parsed);
+    foreach (var device in devices)
+    {
+        ScadaRuntime.gcolEndDeviceNode.Add(device.lngMac, device);
+    }
 
     foreach (var group in parsed.Groups)
     {
@@ -93,12 +106,123 @@ foreach (var co in ScadaRuntime.gcolCoordinator.Values)
                 }
             }
         }
-            
+
+        if (!result.IsException && result.Registers != null)
+        {
+            ushort[] regs = result.Registers;
+            int start = cmd.StartAddress;
+
+            foreach (var device in devices)
+            {
+                foreach (var kv in device.AddressProfiles)
+                {
+                    int address = kv.Key;
+                    AddressDecodeProfile profile = kv.Value;
+
+                    // 只處理這次 read 範圍內的 address
+                    if (address < start || address >= start + regs.Length)
+                        continue;
+
+                    try
+                    {
+                        double value =
+                            ModbusValueDecoder.Decode(regs, start, profile);
+
+                        if (!device.Sensors.TryGetValue(address, out var sensor))
+                        {
+                            sensor = new SensorPoint { Address = address };
+                            device.Sensors[address] = sensor;
+
+                        }
+
+                        sensor.Value = value;
+                        sensor.IsValid = true;
+                        sensor.Quality = SensorQuality.Good;
+                        sensor.LastUpdate = DateTime.Now;
+
+                        Console.WriteLine($"[OK] Addr {address} = {value}");
+                    }
+                    catch (Exception ex)
+                    {
+                        if (device.Sensors.TryGetValue(address, out var sensor))
+                        {
+                            sensor.IsValid = false;
+                            sensor.Quality = SensorQuality.Bad;
+                            sensor.ErrorMessage = ex.Message;
+                        }
+
+                        Console.WriteLine($"[ERR] Addr {address}: {ex.Message}");
+                    }
+                }
+                device.BuildOrderedAddresses();
+            }
+        }
+    }
+}
+
+// Enddevice已經取得值
+var acRepo = new ACToolsRepository(reader);
+
+List<clsControlDevice> Controldevices =
+    acRepo.LoadControlDevices();
+
+var resolver = new SensorResolver();
+
+foreach (var dev in Controldevices)
+{
+    Console.WriteLine($"Type={dev.TypeID}, MAC={dev.MacId}, Name={dev.Name}");
+
+    // ================= AI =================
+    if (dev is clsAI ai)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            if (string.IsNullOrWhiteSpace(ai.InputSIDs[i]))
+                continue;
+
+            string sid = ai.InputSIDs[i];
+
+            var sp = resolver.ResolveBySID(sid);
+
+            if (sp != null)
+            {
+                Console.WriteLine(
+                    $" AI[{i + 1}] {ai.InputNames[i]} ({sid}) = {sp.Value}");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $" AI[{i + 1}] {ai.InputNames[i]} ({sid}) = **無法對應**");
+            }
+        }
     }
 
+    // ================= AO =================
+    if (dev is clsAO ao)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            if (string.IsNullOrWhiteSpace(ao.OutputCIDs[i]))
+                continue;
 
+            string cid = ao.OutputCIDs[i];
 
+            var sp = resolver.ResolveBySID(cid);
+
+            if (sp != null)
+            {
+                Console.WriteLine(
+                    $" AO[{i + 1}] {ao.OutputNames[i]} ({cid}) = {sp.Value}");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $" AO[{i + 1}] {ao.OutputNames[i]} ({cid}) = **無法對應**");
+            }
+        }
+    }
 }
+
 
 Console.WriteLine($"Coordinator count = {ScadaRuntime.gcolCoordinator.Count}");
 

@@ -78,7 +78,7 @@ namespace Scada.Core.Modbus
                         break;
 
                     case "nodescale":
-                        gb.Scales = ParseIntCsv(right);
+                        gb.Scales = ParseStringCsv(right);
                         break;
 
                     case "nodename":
@@ -142,7 +142,7 @@ namespace Scada.Core.Modbus
         {
             public int GroupIndex { get; }
             public int[]? Addresses;
-            public int[]? Scales;
+            public string[]? Scales;
             public string[]? Names;
             public string[]? Units;
             public string? RawNodeDef;
@@ -155,7 +155,7 @@ namespace Scada.Core.Modbus
                 {
                     GroupIndex = GroupIndex,
                     Addresses = Addresses ?? Array.Empty<int>(),
-                    Scales = Scales ?? Array.Empty<int>(),
+                    Scales = Scales ?? Array.Empty<string>(),
                     Names = Names ?? Array.Empty<string>(),
                     Units = Units ?? Array.Empty<string>(),
                     RawNodeDef = RawNodeDef
