@@ -7,32 +7,13 @@ namespace Scada.Core.Binding
     {
         public SensorPoint? ResolveBySID(string sid)
         {
-            // ⭐ 解析 sid: 655361-s1
-            if (!SidParser.TryParseSid(sid, out long mac, out int sensorIndex))
-                return null;
+            if (string.IsNullOrWhiteSpace(sid)) return null;
 
-            // ⭐ 找 EndDevice
-            if (!ScadaRuntime.gcolEndDeviceNode.TryGetValue(mac, out var dev))
-                return null;
-
-            if (dev.Sensors == null || dev.OrderedAddresses == null)
-                return null;
-
-            // ⭐ 檢查 index 是否存在
-            if (sensorIndex < 0 || sensorIndex >= dev.OrderedAddresses.Count)
-                return null;
-
-            // ⭐ 取得真實 address
-            int address = dev.OrderedAddresses[sensorIndex];
-
-            // ⭐ 回傳 SensorPoint
-            return dev.Sensors.TryGetValue(address, out var sp)
-                ? sp
-                : null;
+            // 搜尋所有已載入設備中的感測點，比對 SID 字串
+            return ScadaRuntime.gcolEndDeviceNode.Values
+                .SelectMany(dev => dev.Sensors.Values)
+                .FirstOrDefault(sp => sp.SID == sid);
         }
-
-       
-
     }
 
 }

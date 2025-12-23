@@ -88,7 +88,7 @@ namespace Scada.Core.Data.Repository
                 // ==================== AI Channels ====================
         private void FillAIChannels(clsAI ai, IDataRecord r)
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < ai.InputSIDs.Length; i++)
             {
                 int nameCol = i * 2 + 2;
                 int sidCol = i * 2 + 3;

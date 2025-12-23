@@ -23,13 +23,7 @@ namespace Scada.Core.Domain
                 .OrderBy(x => x)
                 .ToList();
         }
-
         // Node Settings
-        private byte mbytNodeType;
-        public string strNodeType;
-        public string strMAC, strSystemID, strNodePos;
         public long lngMac;
-
-        public int intCalCount, intCalItem;
     }
 }

@@ -14,217 +14,81 @@ using Scada.Core.Modbus.Decode;
 using Scada.Core.Runtime;
 using Scada.Core.Services;
 
-// ===== 這裡就是 Main() 內容 =====
 
-// 1. 讀設定檔
+// ===== 這裡就是 Main() 內容 =====
+// 1. 讀設定檔與初始化 Repository
 var settings = new SettingsReader("Setting/Settings.xml");
 string connStr = settings.GetSqlConnectionString();
-
-// 2. 建立 DB Reader
 var reader = new DbReader(connStr);
-
-// 3. 讀取 Coordinator
 var coRepo = new CoordinatorRepository(reader);
+var acRepo = new ACToolsRepository(reader);
+var defLoader = new CoordinatorDefLoader();
+var loader = new CoordinatorConfigLoader();
+var repo = new EndDeviceRepository();
+var logger = new Logger(new TextFileLogSink("Log/log.txt"));
 
+// 2. 載入基本資料
 ScadaRuntime.gcolCoordinator.Clear();
-
 foreach (var mobjCoordinator in coRepo.GetCoordinator())
 {
     ScadaRuntime.gcolCoordinator[mobjCoordinator.strMAC] = mobjCoordinator;
-
-    Console.WriteLine(
-        $"MAC={mobjCoordinator.strMAC}, " +
-        $"ConnSettings={mobjCoordinator.strConnSettings}, " +
-        $"ConnPort={mobjCoordinator.intConnPort}"
-    );
 }
 
 ScadaRuntime.gcolEndDeviceNode.Clear();
+List<clsControlDevice> Controldevices = acRepo.LoadControlDevices();
 
-var defLoader = new CoordinatorDefLoader();
 string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
+// ⭐ 關鍵：建立一個對應表，存儲每個 Coordinator 對應的專屬指令
+// 這樣 RuntimeLoop 才知道每一台要發什麼指令
+var coordinatorCommands = new Dictionary<string, List<ModbusReadCommand>>();
+
+// 3. 預處理所有 Coordinator (一次性完成初始化)
 foreach (var co in ScadaRuntime.gcolCoordinator.Values)
 {
-    // 讀取文字檔
-    switch (co.u8Type)
-    {
-        case 30:
-            defLoader.LoadType30(co, basePath);
-            break;
-    }
-    // 計算Modbus指令
-    var loader = new CoordinatorConfigLoader();
+    Console.WriteLine($"[Init] 處理 Coordinator: {co.strName} ({co.strMAC})");
 
-    ParsedCoordinatorFile parsed =
-        loader.Load(co, basePath);
+    // 載入 .def 文字檔
+    if (co.u8Type == 30) defLoader.LoadType30(co, basePath);
 
-    // 看結果
-    Console.WriteLine(parsed.TypeID);
-    Console.WriteLine(parsed.Groups.Count);
-    // 4. 測試 ModbusReadPlanner
-    var allCommands = new List<ModbusReadCommand>();
+    // 解析組態檔案
+    ParsedCoordinatorFile parsed = loader.Load(co, basePath);
 
-    var repo = new EndDeviceRepository();
+    // 建立該 Coordinator 底下的所有 EndDevices 並加入全域快取
     tgEndDevice[] devices = repo.CreateFromCoordinator(co, parsed);
     foreach (var device in devices)
     {
-        ScadaRuntime.gcolEndDeviceNode.Add(device.lngMac, device);
+        // 確保不會重複加入相同的 lngMac
+        ScadaRuntime.gcolEndDeviceNode[device.lngMac] = device;
     }
 
+    // ⭐ 建立這台 Coordinator 的專用指令集
+    var myCommands = new List<ModbusReadCommand>();
     foreach (var group in parsed.Groups)
     {
-        if (string.IsNullOrWhiteSpace(group.RawNodeDef))
-            continue;
-
-        // ⭐ Build 吃 string，這裡就餵 string
+        if (string.IsNullOrWhiteSpace(group.RawNodeDef)) continue;
         var cmds = ModbusReadPlanner.Build(group.RawNodeDef);
-        foreach (var c in cmds)
-        {
-            Console.WriteLine(c);
-        }
-        allCommands.AddRange(cmds);
+        myCommands.AddRange(cmds);
     }
 
-    var executor = new ModbusTcpExecutor();
-
-    foreach (var cmd in allCommands)
-    {
-        var result = executor.Execute(co, cmd);
-
-        if (result.IsException)
-            Console.WriteLine("Read failed");
-        else
-        {
-            Console.WriteLine($"Read OK: {cmd.StartAddress} len={cmd.Length}");
-            if (!result.IsException && result.Registers != null)
-            {
-                for (int i = 0; i < result.Registers.Length; i++)
-                {
-                    int addr = cmd.StartAddress + i;
-                    Console.WriteLine($"Addr {addr} = {result.Registers[i]}");
-                }
-            }
-        }
-
-        if (!result.IsException && result.Registers != null)
-        {
-            ushort[] regs = result.Registers;
-            int start = cmd.StartAddress;
-
-            foreach (var device in devices)
-            {
-                foreach (var kv in device.AddressProfiles)
-                {
-                    int address = kv.Key;
-                    AddressDecodeProfile profile = kv.Value;
-
-                    // 只處理這次 read 範圍內的 address
-                    if (address < start || address >= start + regs.Length)
-                        continue;
-
-                    try
-                    {
-                        double value =
-                            ModbusValueDecoder.Decode(regs, start, profile);
-
-                        if (!device.Sensors.TryGetValue(address, out var sensor))
-                        {
-                            sensor = new SensorPoint { Address = address };
-                            device.Sensors[address] = sensor;
-
-                        }
-
-                        sensor.Value = value;
-                        sensor.IsValid = true;
-                        sensor.Quality = SensorQuality.Good;
-                        sensor.LastUpdate = DateTime.Now;
-
-                        Console.WriteLine($"[OK] Addr {address} = {value}");
-                    }
-                    catch (Exception ex)
-                    {
-                        if (device.Sensors.TryGetValue(address, out var sensor))
-                        {
-                            sensor.IsValid = false;
-                            sensor.Quality = SensorQuality.Bad;
-                            sensor.ErrorMessage = ex.Message;
-                        }
-
-                        Console.WriteLine($"[ERR] Addr {address}: {ex.Message}");
-                    }
-                }
-                device.BuildOrderedAddresses();
-            }
-        }
-    }
+    coordinatorCommands[co.strMAC] = myCommands;
 }
 
-// Enddevice已經取得值
-var acRepo = new ACToolsRepository(reader);
+var historyRepo = new HistoryRepository(connStr);
 
-List<clsControlDevice> Controldevices =
-    acRepo.LoadControlDevices();
+// 4. ⭐ 啟動 RuntimeLoop (只啟動一次)
+// 注意：我們需要稍微修改 RuntimeLoop 的建構子，接收這個 Dictionary
+var runtime = new RuntimeLoop(Controldevices, coordinatorCommands, historyRepo, logger);
+runtime.Start();
 
-var resolver = new SensorResolver();
+Console.WriteLine("\n>>> 系統運行中，按任意鍵停止系統 <<<");
 
-foreach (var dev in Controldevices)
-{
-    Console.WriteLine($"Type={dev.TypeID}, MAC={dev.MacId}, Name={dev.Name}");
-
-    // ================= AI =================
-    if (dev is clsAI ai)
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            if (string.IsNullOrWhiteSpace(ai.InputSIDs[i]))
-                continue;
-
-            string sid = ai.InputSIDs[i];
-
-            var sp = resolver.ResolveBySID(sid);
-
-            if (sp != null)
-            {
-                Console.WriteLine(
-                    $" AI[{i + 1}] {ai.InputNames[i]} ({sid}) = {sp.Value}");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $" AI[{i + 1}] {ai.InputNames[i]} ({sid}) = **無法對應**");
-            }
-        }
-    }
-
-    // ================= AO =================
-    if (dev is clsAO ao)
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            if (string.IsNullOrWhiteSpace(ao.OutputCIDs[i]))
-                continue;
-
-            string cid = ao.OutputCIDs[i];
-
-            var sp = resolver.ResolveBySID(cid);
-
-            if (sp != null)
-            {
-                Console.WriteLine(
-                    $" AO[{i + 1}] {ao.OutputNames[i]} ({cid}) = {sp.Value}");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $" AO[{i + 1}] {ao.OutputNames[i]} ({cid}) = **無法對應**");
-            }
-        }
-    }
-}
-
-
-Console.WriteLine($"Coordinator count = {ScadaRuntime.gcolCoordinator.Count}");
-
-
+// 5. 這裡才是停下的地方
 Console.ReadKey();
+
+runtime.Stop();
+Console.WriteLine("系統已停止。");
+
+
+
+

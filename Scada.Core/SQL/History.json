@@ -1,0 +1,22 @@
+{
+  "DatabaseSetup": {
+    "Version": "1.0",
+    "Description": "SCADA History Data Schema",
+    "Tables": [
+      {
+        "TableName": "History",
+        "CreateScript": "CREATE TABLE [dbo].[History] ([Id] BIGINT IDENTITY (1, 1) NOT NULL, [SID] NVARCHAR (50) NOT NULL, [Value] FLOAT (53) NULL, [Quality] INT NOT NULL, [LastUpdate] DATETIME NOT NULL, CONSTRAINT [PK_History] PRIMARY KEY CLUSTERED ([Id] ASC));"
+      }
+    ],
+    "Indexes": [
+      {
+        "IndexName": "IX_History_SID_Time",
+        "CreateScript": "CREATE NONCLUSTERED INDEX [IX_History_SID_Time] ON [dbo].[History]([SID] ASC, [LastUpdate] DESC);"
+      },
+      {
+        "IndexName": "IX_History_Time",
+        "CreateScript": "CREATE NONCLUSTERED INDEX [IX_History_Time] ON [dbo].[History]([LastUpdate] DESC);"
+      }
+    ]
+  }
+}

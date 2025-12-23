@@ -6,113 +6,81 @@ namespace Scada.Core.Modbus.Decode
 {
     public static class AddressDecodeProfileBuilder
     {
-        public static Dictionary<int, AddressDecodeProfile>
-            BuildFromGroup(ParsedNodeGroup group)
+        public static Dictionary<int, AddressDecodeProfile> BuildFromGroup(ParsedNodeGroup group)
         {
             var dict = new Dictionary<int, AddressDecodeProfile>();
-
             int addrCount = group.Addresses.Length;
-            int scaleCount = group.Scales.Length;
 
             for (int i = 0; i < addrCount; i++)
             {
                 int address = group.Addresses[i];
+                string scaleText = (i < group.Scales.Length) ? group.Scales[i] : "1";
+                string? nodeName = (i < group.Names.Length) ? group.Names[i] : null;
 
-                string scaleText = "1";
-                if (i < scaleCount && !string.IsNullOrWhiteSpace(group.Scales[i]))
-                    scaleText = group.Scales[i].Trim();
-
-                var profile = BuildProfile(address, scaleText);
+                // 傳入 i + 1 作為 S 序號 (S1, S2...)
+                var profile = BuildProfile(address, scaleText, i + 1, nodeName);
                 dict[address] = profile;
             }
-
             return dict;
         }
 
-        /// <summary>
-        /// 解析 Scale 字串（如：0.1、Float、Float@0.1、UInt32@0.01）
-        /// </summary>
-        private static AddressDecodeProfile BuildProfile(
-            int address,
-            string scaleText)
+        private static AddressDecodeProfile BuildProfile(int address, string scaleText, int seqIndex, string? nodeName)
         {
-            // ===== 預設 =====
             DecodeDataType dataType = DecodeDataType.Int16;
             int wordCount = 1;
             EndianType endian = EndianType.AB;
-            bool signed = true;
             float scale = 1f;
 
-            // ===== 拆解 @ =====
-            // ex: "Float@0.1"
+            // ⭐ 新增：根據地址區間自動判定功能碼
+            byte functionCode;
+            if ((address >= 40001 && address <= 49999) || (address >= 400001 && address <= 465535))
+                functionCode = 3; // Holding Registers
+            else if ((address >= 30001 && address <= 39999) || (address >= 300001 && address <= 365535))
+                functionCode = 4; // Input Registers
+            else if ((address >= 10001 && address <= 19999) || (address >= 100001 && address <= 165535))
+                functionCode = 2; // Discrete Inputs
+            else
+                functionCode = 1; // Coils
+
             string[] parts = scaleText.Split('@', StringSplitOptions.RemoveEmptyEntries);
-
             string typePart = parts[0];
-            if (parts.Length > 1)
-            {
-                float.TryParse(
-                    parts[1],
-                    NumberStyles.Float,
-                    CultureInfo.InvariantCulture,
-                    out scale);
-            }
 
-            // ===== 判斷資料型態 =====
+            if (parts.Length > 1)
+                float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out scale);
+
             switch (typePart.ToUpperInvariant())
             {
                 case "105":
+                case "FLOATINGPT":
                     dataType = DecodeDataType.Float;
                     endian = EndianType.BA;
                     wordCount = 2;
-                    signed = true;
-                    scale = (parts.Length > 1) ? scale : 1f;
                     break;
-
-                case "FloatingPt":
-                    dataType = DecodeDataType.Float;
-                    endian = EndianType.BA;
-                    wordCount = 2;
-                    signed = true;
-                    scale = (parts.Length > 1) ? scale : 1f;
-                    break;
-
                 case "UINT32":
                     dataType = DecodeDataType.UInt32;
                     wordCount = 2;
-                    signed = false;
-                    scale = (parts.Length > 1) ? scale : 1f;
                     break;
-
                 case "INT32":
                     dataType = DecodeDataType.Int32;
                     wordCount = 2;
-                    signed = true;
-                    scale = (parts.Length > 1) ? scale : 1f;
                     break;
-
                 default:
-                    // 預設視為「倍率字串」
-                    // ex: "0.1"
-                    float.TryParse(
-                        typePart,
-                        NumberStyles.Float,
-                        CultureInfo.InvariantCulture,
-                        out scale);
-
-                    dataType = DecodeDataType.Int16;
-                    wordCount = 1;
-                    signed = true;
+                    // 如果 typePart 本身就是數字（倍率），則直接解析為 scale
+                    float.TryParse(typePart, NumberStyles.Float, CultureInfo.InvariantCulture, out scale);
                     break;
             }
 
             return new AddressDecodeProfile
             {
                 Address = address,
+                Name = nodeName,
+                SequenceIndex = seqIndex,
                 DataType = dataType,
                 WordCount = wordCount,
                 Endian = endian,
-                Signed = signed,
-                Scale = scale
+                Scale = scale == 0 ? 1f : scale,
+                // ⭐ 確保 AddressDecodeProfile 類別中有這個屬性
+                FunctionCode = functionCode
             };
         }
     }

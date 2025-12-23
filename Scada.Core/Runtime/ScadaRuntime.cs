@@ -1,26 +1,29 @@
-﻿using System.Collections.Generic;
-using Scada.Core.Domain;
+﻿using Scada.Core.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Scada.Core.Runtime
 {
     /// <summary>
-    /// SCADA 執行期間全域狀態
-    /// （等價 VB 的 gcolXXX）
+    /// 整個系統的全域 Runtime 狀態中心
+    /// （Coordinator、EndDevice、ControlDevice 都集中管理）
     /// </summary>
+    /// 
     public static class ScadaRuntime
     {
-        /// <summary>
-        /// gcolCoordinator
-        /// Key = strMAC
-        /// </summary>
-        public static Dictionary<string, tgCoordinator> gcolCoordinator
+        // ================= Coordinator =================
+        public static readonly Dictionary<string, tgCoordinator> gcolCoordinator
             = new Dictionary<string, tgCoordinator>();
 
-        /// <summary>
-        /// gcolEndDeviceNode
-        /// Key = lngMac
-        /// </summary>
-        public static Dictionary<long, tgEndDevice> gcolEndDeviceNode
+        // ================= End Devices =================
+        public static readonly Dictionary<long, tgEndDevice> gcolEndDeviceNode
             = new Dictionary<long, tgEndDevice>();
+
+        // ================= Control Devices =================
+        public static readonly List<clsControlDevice> gcolControlDevice
+            = new List<clsControlDevice>();
     }
 }

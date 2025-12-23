@@ -9,25 +9,11 @@
         public string strConnSettings;
         public short intBufferSize;
 
-        public string strPicFile;
         public int intModbusIDCount;
         public uint lngMac;
         public string strMAC;
-
-        public int intPosX;
-        public int intPosY;
-
         public byte u8Type;
         public ushort u16SleepTime;
-
-        public byte[] u16PANID = new byte[2];
-        public byte u8Channel;
-
-        public byte[] u16ProfileID = new byte[2];
-
-        public byte u8SrcEndNode;
-        public byte u8ClusterID;
-        public byte u8DstEndNode;
 
         public int intConnectType;
         public bool blnMonitorEnabledWhenOpen;
@@ -38,8 +24,6 @@
 
         // ===== Runtime 狀態（Phase 1 先留）=====
         public short intMonitorStatus;
-        public int ModbusNoResponseMax;
-        public int ModbusNoResponseIndex;
         public bool forceReconnect;
         public bool NeedConnect;
 
@@ -65,10 +49,7 @@
         public int PressureModbusCommandCount;
         public int PressureModbusCommandUbound;
 
-        public int PressureDIBitCount, PressureDOBitCount;
-
-        public int intMBSendMode, intReturnLen, intTimeout, intMBPacketID, intPacketCount, intDeviceMode, intReConnectTCPAgain;
-        public byte[] bytSendTemp = new byte[256];
+        public int  intReturnLen, intTimeout, intReConnectTCPAgain;
         public byte u8EDType;
 
     }

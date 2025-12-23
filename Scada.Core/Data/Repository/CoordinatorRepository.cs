@@ -42,20 +42,6 @@ namespace Scada.Core.Data.Repositories
                 mobjCoordinator.u8Type = Convert.ToByte(r["u8Type"]);
                 mobjCoordinator.u16SleepTime = Convert.ToUInt16(r["u16SleepTime"]);
 
-                ushort pan = Convert.ToUInt16(r["u16PANID"]);
-                mobjCoordinator.u16PANID[0] = (byte)(pan / 256);
-                mobjCoordinator.u16PANID[1] = (byte)(pan % 256);
-
-                mobjCoordinator.u8Channel = Convert.ToByte(r["u8Channel"]);
-
-                ushort profile = Convert.ToUInt16(r["u16ProfileID"]);
-                mobjCoordinator.u16ProfileID[0] = (byte)(profile / 256);
-                mobjCoordinator.u16ProfileID[1] = (byte)(profile % 256);
-
-                mobjCoordinator.u8SrcEndNode = Convert.ToByte(r["u8SrcEndNode"]);
-                mobjCoordinator.u8ClusterID = Convert.ToByte(r["u8ClusterID"]);
-                mobjCoordinator.u8DstEndNode = Convert.ToByte(r["u8DstEndNode"]);
-
                 mobjCoordinator.intConnectType = Convert.ToInt32(r["ConnType"]);
                 mobjCoordinator.blnMonitorEnabledWhenOpen =
                     Convert.ToBoolean(r["MonitorEnabled"]);

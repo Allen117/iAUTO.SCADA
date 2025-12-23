@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scada.Core", "Scada.Core\Sc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scada.ConsoleApp", "Scada.ConsoleApp\Scada.ConsoleApp.csproj", "{0B7FA91A-6AB1-4806-B1B0-A58700ED9F43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scada.Form", "Scada.Form\Scada.Form.csproj", "{0C5B6064-E61B-43D0-82B3-3504F5025E70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0B7FA91A-6AB1-4806-B1B0-A58700ED9F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B7FA91A-6AB1-4806-B1B0-A58700ED9F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B7FA91A-6AB1-4806-B1B0-A58700ED9F43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C5B6064-E61B-43D0-82B3-3504F5025E70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C5B6064-E61B-43D0-82B3-3504F5025E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C5B6064-E61B-43D0-82B3-3504F5025E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C5B6064-E61B-43D0-82B3-3504F5025E70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
