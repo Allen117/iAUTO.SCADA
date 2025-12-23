@@ -166,11 +166,11 @@ namespace Scada.Core.Runtime
                         // 2. 尋找設備
                         var device = ScadaRuntime.gcolEndDeviceNode.Values
                             .FirstOrDefault(d => d.lngMac == targetMac);
-
                         if (device == null)
                         {
                             _logger.Warn($"[控制失敗] 找不到設備 MAC: {targetMac}");
                             continue;
+
 
                         }
 
